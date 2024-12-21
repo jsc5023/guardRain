@@ -68,56 +68,16 @@ GuardRain은 실시간 기상 데이터를 활용하여 자연재해 보험금 �
 - Docker Engine
 - MySQL 8.0 이상
 
-## 설치 및 실행 방법
-
-1. 저장소 클론
-```bash
-git clone https://github.com/jsc5023/guardrain.git
-cd guardrain
-```
-
-2. 환경 변수 설정
-```bash
-cp .env.example .env
-# .env 파일 수정
-```
-
-3. 도커 컴포즈로 실행
-```bash
-docker-compose up -d
-```
-
 ## API 문서
 
-각 서비스의 API 문서는 Swagger UI를 통해 확인할 수 있습니다:
+각 서비스의 API 문서는 Swagger UI를 통해 제공될 예정입니다:
 
-- Disaster Monitoring Service: http://localhost:8081/swagger-ui.html
-- Area Analysis Service: http://localhost:8082/swagger-ui.html
-- Claim Calculation Service: http://localhost:8083/swagger-ui.html
-
-## 프로젝트 구조
-
-```
-guardrain/
-├── disaster-monitoring-service/
-├── area-analysis-service/
-├── claim-calculation-service/
-├── api-gateway/
-├── eureka-server/
-├── docker-compose.yml
-└── README.md
-```
+- Disaster Monitoring Service: (준비 중)
+- Area Analysis Service: (준비 중)
+- Claim Calculation Service: (준비 중)
 
 ## 모니터링 및 로깅
 
 - Actuator 엔드포인트를 통한 서비스 상태 모니터링
 - ELK 스택을 통한 중앙 집중식 로깅
 - Prometheus + Grafana를 통한 메트릭 수집 및 시각화
-
-## 기여 방법
-
-1. 프로젝트를 Fork 합니다
-2. 새로운 기능 브랜치를 생성합니다 (`git checkout -b feature/새로운기능`)
-3. 변경사항을 커밋합니다 (`git commit -m '새로운 기능 추가'`)
-4. 브랜치에 Push 합니다 (`git push origin feature/새로운기능`)
-5. Pull Request를 생성합니다
