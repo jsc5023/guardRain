@@ -3,6 +3,7 @@ package com.guardrain.auth.domain;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,7 +15,7 @@ import java.util.Set;
 @Entity
 @Table(name = "user")
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
