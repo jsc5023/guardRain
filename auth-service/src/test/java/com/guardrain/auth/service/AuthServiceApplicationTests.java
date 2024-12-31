@@ -1,7 +1,7 @@
 package com.guardrain.auth.service;
 
-import com.guardrain.auth.dto.request.SignUpRequest;
 import com.guardrain.auth.domain.User;
+import com.guardrain.auth.dto.request.SignUpRequest;
 import com.guardrain.auth.exception.UserAlreadyExistsException;
 import com.guardrain.auth.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
