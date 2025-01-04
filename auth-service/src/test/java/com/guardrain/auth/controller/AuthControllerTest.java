@@ -2,7 +2,7 @@ package com.guardrain.auth.controller;
 
 import com.guardrain.auth.domain.User;
 import com.guardrain.auth.dto.request.SignUpRequest;
-import com.guardrain.auth.service.UserService;
+import com.guardrain.auth.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthControllerTest {
 
     @Mock
-    private UserService userService;
+    private AuthService userService;
 
     @InjectMocks
     private AuthController authController;

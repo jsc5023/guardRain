@@ -3,7 +3,7 @@ package com.guardrain.auth.controller;
 import com.guardrain.auth.domain.User;
 import com.guardrain.auth.dto.request.SignUpRequest;
 import com.guardrain.auth.dto.response.UserResponse;
-import com.guardrain.auth.service.UserService;
+import com.guardrain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserService userService;
+    private final AuthService userService;
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signUp(@RequestBody SignUpRequest request) {

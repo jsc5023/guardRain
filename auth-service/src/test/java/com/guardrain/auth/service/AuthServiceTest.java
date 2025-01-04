@@ -12,17 +12,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class AuthServiceTest {
 
     @InjectMocks
-    private UserService userService;
+    private AuthService authService;
 
     @Mock
     private UserRepository userRepository;
@@ -47,13 +45,12 @@ class UserServiceTest {
         given(userRepository.save(any(User.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // When
-//        User savedUser = userService.signUp(request);
-//
-//        // Then
-//        assertThat(savedUser).isNotNull();
-//        assertThat(savedUser.getUsername()).isEqualTo(request.getUsername());
-//        assertThat(savedUser.getEmail()).isEqualTo(request.getEmail());
-//        verify(userRepository).save(any(User.class));
+        User savedUser = authService.signUp(request);  // 실제 서비스 메소드 호출
+
+        // Then
+        assertThat(savedUser).isNotNull();
+        assertThat(savedUser.getUsername()).isEqualTo(request.getUsername());
+        assertThat(savedUser.getEmail()).isEqualTo(request.getEmail());
     }
 
     @Test
@@ -70,7 +67,7 @@ class UserServiceTest {
         given(userRepository.existsByUsername(request.getUsername())).willReturn(true);
 
         // When & Then
-        assertThatThrownBy(() -> userService.signUp(request))
+        assertThatThrownBy(() -> authService.signUp(request))
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("이미 존재하는 사용자명입니다");
     }
@@ -90,7 +87,7 @@ class UserServiceTest {
         given(userRepository.existsByEmail(request.getEmail())).willReturn(true);
 
         // When & Then
-        assertThatThrownBy(() -> userService.signUp(request))
+        assertThatThrownBy(() -> authService.signUp(request))
                 .isInstanceOf(UserAlreadyExistsException.class)
                 .hasMessageContaining("이미 존재하는 이메일입니다");
     }
