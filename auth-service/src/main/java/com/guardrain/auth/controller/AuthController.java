@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService userService;
+    private final AuthService authService;
 
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signUp(@RequestBody SignUpRequest request) {
-        User user = userService.signUp(request);
+        User user = authService.signUp(request);
         return ResponseEntity.ok(UserResponse.from(user));
     }
 

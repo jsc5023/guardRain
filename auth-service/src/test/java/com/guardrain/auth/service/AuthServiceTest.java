@@ -74,7 +74,7 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("중복된 이메일로 회원가입 시 실패")
-    void signUp_DuplicateEmail_ThrowsException() {
+    void shouldReturnBadRequestWhenEmailDuplicate() {
         // Given
         SignUpRequest request = new SignUpRequest(
                 "newuser",
