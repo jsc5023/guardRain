@@ -2,6 +2,7 @@ package com.guardrain.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardrain.auth.domain.User;
+import com.guardrain.auth.dto.request.LoginRequest;
 import com.guardrain.auth.dto.request.SignUpRequest;
 import com.guardrain.auth.exception.GlobalExceptionHandler;
 import com.guardrain.auth.exception.UserAlreadyExistsException;
@@ -50,7 +51,7 @@ class AuthControllerTest {
 
     @Test
     @DisplayName("회원가입 API 테스트")
-    void signUp() throws Exception {
+    void givenValidSignUpRequest_whenSignUp_thenSuccess() throws Exception {
         SignUpRequest request = new SignUpRequest("jsc", "password123!", "jsc@123.com", "Test User");
 
         User mockUser = new User();
@@ -58,14 +59,14 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"testuser\",\"password\":\"password123!\",\"email\":\"test@example.com\",\"name\":\"Test User\"}"))
+                        .content("{\"username\":\"jsc\",\"password\":\"password123!\",\"email\":\"test@example.com\",\"name\":\"Test User\"}"))
                 .andExpect(status().isOk());
     }
 
 
     @Test
     @DisplayName("중복된 이메일로 회원가입 실패")
-    void shouldThrowExceptionWhenEmailDuplicate() throws Exception {
+    void givenDuplicateEmail_whenSignUp_thenThrowException() throws Exception {
         // given
         SignUpRequest request = new SignUpRequest("jsc", "password123!", "jsc@123.com", "Test User");
         when(authService.signUp(any()))
@@ -77,7 +78,26 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)));
     }
 
-        /*
+    @Test
+    @DisplayName("로그인 성공")
+    void givenValidLoginRequest_whenLogin_thenReturnUserResponse() throws Exception {
+
+        // given
+        LoginRequest loginRequest = new LoginRequest("jsc", "password123!");
+
+        // when
+        User mockUser = new User();
+        when(authService.login(any(LoginRequest.class))).thenReturn(mockUser);
+
+        // then
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"jsc\",\"password\":\"password123!\"}"))
+                .andExpect(status().isOk());
+    }
+
+
+    /*
     @Test
     @DisplayName("회원가입 성공시 JWT 토큰 반환")
     void signUpWithToken() throws Exception {
@@ -93,6 +113,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.accessToken").exists())
                 .andExpect(jsonPath("$.refreshToken").exists());
     }
+
 
     @Test
     @DisplayName("로그인 성공시 JWT 토큰 반환")

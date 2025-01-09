@@ -1,7 +1,9 @@
 package com.guardrain.auth.service;
 
 import com.guardrain.auth.domain.User;
+import com.guardrain.auth.dto.request.LoginRequest;
 import com.guardrain.auth.dto.request.SignUpRequest;
+import com.guardrain.auth.dto.response.UserResponse;
 import com.guardrain.auth.exception.UserAlreadyExistsException;
 import com.guardrain.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +35,11 @@ public class AuthService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public User login(LoginRequest request) {
+        //TODO
+
+        return null;
     }
 }

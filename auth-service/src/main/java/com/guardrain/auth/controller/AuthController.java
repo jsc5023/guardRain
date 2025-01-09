@@ -1,6 +1,7 @@
 package com.guardrain.auth.controller;
 
 import com.guardrain.auth.domain.User;
+import com.guardrain.auth.dto.request.LoginRequest;
 import com.guardrain.auth.dto.request.SignUpRequest;
 import com.guardrain.auth.dto.response.UserResponse;
 import com.guardrain.auth.service.AuthService;
@@ -20,6 +21,12 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signUp(@RequestBody SignUpRequest request) {
         User user = authService.signUp(request);
+        return ResponseEntity.ok(UserResponse.from(user));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest request) {
+        User user = authService.login(request);
         return ResponseEntity.ok(UserResponse.from(user));
     }
 
