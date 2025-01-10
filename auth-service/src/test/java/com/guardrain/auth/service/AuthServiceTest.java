@@ -2,7 +2,7 @@ package com.guardrain.auth.service;
 
 import com.guardrain.auth.domain.User;
 import com.guardrain.auth.dto.request.SignUpRequest;
-import com.guardrain.auth.exception.UserAlreadyExistsException;
+import com.guardrain.auth.exception.AuthException;
 import com.guardrain.auth.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,7 @@ class AuthServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> authService.signUp(request))
-                .isInstanceOf(UserAlreadyExistsException.class)
+                .isInstanceOf(AuthException.class)
                 .hasMessageContaining("이미 존재하는 사용자명입니다");
     }
 
@@ -88,7 +88,7 @@ class AuthServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> authService.signUp(request))
-                .isInstanceOf(UserAlreadyExistsException.class)
+                .isInstanceOf(AuthException.class)
                 .hasMessageContaining("이미 존재하는 이메일입니다");
     }
 }
