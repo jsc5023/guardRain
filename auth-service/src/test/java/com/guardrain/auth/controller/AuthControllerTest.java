@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardrain.auth.domain.User;
 import com.guardrain.auth.dto.request.LoginRequest;
 import com.guardrain.auth.dto.request.SignUpRequest;
+import com.guardrain.auth.exception.AuthException;
 import com.guardrain.auth.exception.GlobalExceptionHandler;
-import com.guardrain.auth.exception.UserAlreadyExistsException;
 import com.guardrain.auth.repository.UserRepository;
 import com.guardrain.auth.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +73,7 @@ class AuthControllerTest {
         // given
         SignUpRequest request = new SignUpRequest("jsc", "password123!", "jsc@123.com", "Test User");
         when(authService.signUp(any()))
-                .thenThrow(new UserAlreadyExistsException("이미 존재하는 이메일입니다"));
+                .thenThrow(new AuthException("이미 존재하는 이메일입니다", HttpStatus.CONFLICT));
 
         // HTTP 요청에 대한 응답이 적절한지 테스트
         mockMvc.perform(post("/api/auth/signup")
@@ -96,6 +99,43 @@ class AuthControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("잘못된 비밀번호로 로그인 실패")
+    void givenInvalidPassword_whenLogin_thenThrowException() throws Exception {
+        // given
+        LoginRequest loginRequest = new LoginRequest("jsc", "wrongPassword");
+
+        // when
+        when(authService.login(any(LoginRequest.class)))
+                .thenThrow(new AuthException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED));
+
+        // then
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자로 로그인 실패")
+    void givenNonExistentUser_whenLogin_thenThrowException() throws Exception {
+        // given
+        LoginRequest loginRequest = new LoginRequest("nonexistent", "password123!");
+
+
+        when(authService.login(any(LoginRequest.class)))
+                .thenThrow(new AuthException("존재하지 않는 사용자입니다.", HttpStatus.NOT_FOUND));
+
+        // when & then
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("존재하지 않는 사용자입니다."))
+                .andDo(print());
+    }
 
     /*
     @Test
