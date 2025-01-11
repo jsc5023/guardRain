@@ -66,6 +66,20 @@ class AuthControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("이미 존재하는 ID로 회원가입 시도")
+    void givenDuplicateUserName_whenSignUp_thenThrowException() throws Exception {
+        // given
+        SignUpRequest request = new SignUpRequest("jsc", "password123!", "jsc@123.com", "Test User");
+        when(authService.signUp(any()))
+                .thenThrow(new AuthException("이미 존재하는 아이디입니다.", HttpStatus.CONFLICT));
+
+        // HTTP 요청에 대한 응답이 적절한지 테스트
+        mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+    }
+
 
     @Test
     @DisplayName("중복된 이메일로 회원가입 실패")
@@ -100,25 +114,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("잘못된 비밀번호로 로그인 실패")
-    void givenInvalidPassword_whenLogin_thenThrowException() throws Exception {
-        // given
-        LoginRequest loginRequest = new LoginRequest("jsc", "wrongPassword");
-
-        // when
-        when(authService.login(any(LoginRequest.class)))
-                .thenThrow(new AuthException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED));
-
-        // then
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."))
-                .andDo(print());
-    }
-
-    @Test
     @DisplayName("존재하지 않는 사용자로 로그인 실패")
     void givenNonExistentUser_whenLogin_thenThrowException() throws Exception {
         // given
@@ -134,6 +129,25 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("존재하지 않는 사용자입니다."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("잘못된 비밀번호로 로그인 실패")
+    void givenInvalidPassword_whenLogin_thenThrowException() throws Exception {
+        // given
+        LoginRequest loginRequest = new LoginRequest("jsc", "wrongPassword");
+
+        // when
+        when(authService.login(any(LoginRequest.class)))
+                .thenThrow(new AuthException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED));
+
+        // then
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."))
                 .andDo(print());
     }
 

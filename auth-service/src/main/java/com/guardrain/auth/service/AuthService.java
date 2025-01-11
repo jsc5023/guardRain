@@ -20,7 +20,7 @@ public class AuthService {
     @Transactional
     public User signUp(SignUpRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AuthException("이미 존재하는 사용자명입니다", HttpStatus.CONFLICT);
+            throw new AuthException("이미 존재하는 아이디입니다.", HttpStatus.CONFLICT);
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -39,6 +39,14 @@ public class AuthService {
 
     public User login(LoginRequest request) {
         //TODO
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AuthException("존재하지 않는 사용자명입니다.", HttpStatus.CONFLICT);
+        }
+
+        if (userRepository.existsByEmail(request.getPassword())) {
+            throw new AuthException("잘못된 패스워드를 입력하였습니다.", HttpStatus.CONFLICT);
+        }
 
         return null;
     }
