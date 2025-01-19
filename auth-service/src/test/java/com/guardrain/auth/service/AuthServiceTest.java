@@ -1,6 +1,7 @@
 package com.guardrain.auth.service;
 
 import com.guardrain.auth.domain.User;
+import com.guardrain.auth.dto.request.LoginRequest;
 import com.guardrain.auth.dto.request.SignUpRequest;
 import com.guardrain.auth.exception.AuthException;
 import com.guardrain.auth.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
@@ -55,7 +57,7 @@ class AuthServiceTest {
 
     @Test
     @DisplayName("중복된 사용자명으로 회원가입 시 실패")
-    void signUp_DuplicateUsername_ThrowsException() {
+    void login_DuplicateUsername_ThrowsException() {
         // Given
         SignUpRequest request = new SignUpRequest(
                 "existinguser",
@@ -73,7 +75,7 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("중복된 이메일로 회원가입 시 실패")
+    @DisplayName("로그인 실패")
     void shouldReturnBadRequestWhenEmailDuplicate() {
         // Given
         SignUpRequest request = new SignUpRequest(
@@ -91,4 +93,46 @@ class AuthServiceTest {
                 .isInstanceOf(AuthException.class)
                 .hasMessageContaining("이미 존재하는 이메일입니다");
     }
+
+    @Test
+    @DisplayName("없는 회원이름으로 회원가입 시 실패")
+    void givenUserNamePassword_whenLoginNothingName_thenLoginFail() {
+        // Given
+        LoginRequest request = new LoginRequest(
+                "newuser",
+                "password123!"
+        );
+
+        given(userRepository.findByUsername(request.getUsername())).willReturn(null);
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AuthException("존재하지 않는 사용자명입니다.", HttpStatus.CONFLICT);
+        }
+
+        // When & Then
+
+        assertThatThrownBy(() -> authService.login(request))
+                .isInstanceOf(AuthException.class)
+                .hasMessageContaining("존재하지 않는 사용자명입니다.");
+    }
+
+    @Test
+    @DisplayName("잘못된 비밀번호시 로그인 실패")
+    void givenUserNamePassword_whenLoginNothing_thenLoginFail() {
+        // Given
+        LoginRequest request = new LoginRequest(
+                "newuser",
+                "password123!"
+        );
+
+        given(userRepository.findByUsername(request.getUsername())).willReturn(null);
+
+
+        // When & Then
+
+        assertThatThrownBy(() -> authService.login(request))
+                .isInstanceOf(AuthException.class)
+                .hasMessageContaining("잘못된 패스워드를 입력하였습니다.");
+    }
+
 }
